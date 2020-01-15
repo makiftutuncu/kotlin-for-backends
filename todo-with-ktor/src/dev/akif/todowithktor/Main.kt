@@ -1,29 +1,31 @@
 package dev.akif.todowithktor
 
-import dev.akif.todowithktor.common.Left
-import dev.akif.todowithktor.common.Maybe
-import dev.akif.todowithktor.common.Right
 import dev.akif.todowithktor.common.ToDoError
-import dev.akif.todowithktor.todo.*
+import dev.akif.todowithktor.common.ZDT
+import dev.akif.todowithktor.common.registerErrorHandler
+import dev.akif.todowithktor.database.DB
+import dev.akif.todowithktor.todo.ToDoRepository
+import dev.akif.todowithktor.todo.ToDoService
+import dev.akif.todowithktor.todo.todo
 import io.ktor.application.Application
-import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.StatusPages
 import io.ktor.gson.gson
 import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.receive
-import io.ktor.response.respond
 import io.ktor.response.respondText
-import io.ktor.routing.*
+import io.ktor.routing.Routing
+import io.ktor.routing.get
+import java.time.ZonedDateTime
 
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
-    val toDoRepository = ToDoRepository()
+    val db             = DB(if (testing) "mem:todo" else "file:./db/todo.db")
+    val toDoRepository = ToDoRepository(db)
     val toDoService    = ToDoService(toDoRepository)
-    val toDoController = ToDoController(toDoService)
+
+    db.init()
 
     install(StatusPages) {
         registerErrorHandler()
@@ -34,6 +36,7 @@ fun Application.module(testing: Boolean = false) {
             setPrettyPrinting()
             serializeNulls()
             registerTypeAdapter(ToDoError::class.java, ToDoError.gsonAdapter)
+            registerTypeAdapter(ZonedDateTime::class.java, ZDT.gsonAdapter)
         }
     }
 
@@ -42,53 +45,7 @@ fun Application.module(testing: Boolean = false) {
             call.respondText("pong", ContentType.Text.Html)
         }
 
-        post("/user/{userId}/todo") {
-            val userId     = call.parameters["userId"]
-            val createToDo = call.receive<CreateToDo>()
-
-            call.respondMaybe(toDoController.create(userId, createToDo), HttpStatusCode.Created)
-        }
-
-        get("/user/{userId}/todo") {
-            val userId = call.parameters["userId"]
-
-            call.respondMaybe(toDoController.getAllByUserId(userId))
-        }
-
-        get("/user/{userId}/todo/{id}") {
-            val id     = call.parameters["id"]
-            val userId = call.parameters["userId"]
-
-            call.respondMaybe(toDoController.getById(id, userId))
-        }
-
-        put("/user/{userId}/todo/{id}") {
-            val id         = call.parameters["id"]
-            val userId     = call.parameters["userId"]
-            val updateToDo = call.receive<UpdateToDo>()
-
-            call.respondMaybe(toDoController.update(id, userId, updateToDo))
-        }
-
-        delete("/user/{userId}/todo/{id}") {
-            val id     = call.parameters["id"]
-            val userId = call.parameters["userId"]
-
-            call.respondMaybe(toDoController.delete(id, userId))
-        }
-    }
-}
-
-suspend fun <T> ApplicationCall.respondMaybe(maybe: Maybe<T>, status: HttpStatusCode = HttpStatusCode.OK) {
-    when (maybe) {
-        is Left  -> respond(maybe.left.code, maybe.left)
-        is Right -> respond(status, maybe.right as Any)
-    }
-}
-
-fun StatusPages.Configuration.registerErrorHandler() {
-    exception<Exception> { cause ->
-        call.respondMaybe(ToDoError(cause.message ?: cause.localizedMessage).asMaybe<Unit>())
+        todo(toDoService)
     }
 }
 

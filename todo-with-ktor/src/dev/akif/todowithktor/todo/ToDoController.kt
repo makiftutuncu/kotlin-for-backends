@@ -1,9 +1,55 @@
 package dev.akif.todowithktor.todo
 
-import dev.akif.todowithktor.common.Controller
+import dev.akif.todowithktor.common.asId
 import dev.akif.todowithktor.common.Maybe
+import dev.akif.todowithktor.common.respondMaybe
+import io.ktor.application.call
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.receive
+import io.ktor.routing.*
 
-class ToDoController(private val service: ToDoService) : Controller() {
+fun Route.todo(service: ToDoService) {
+    val controller = ToDoController(service)
+
+    route("/todo") {
+        post("/{userId}") {
+            val userId     = call.parameters["userId"]
+            val createToDo = call.receive<CreateToDo>()
+
+            call.respondMaybe(controller.create(userId, createToDo), HttpStatusCode.Created)
+        }
+
+        get("/{userId}") {
+            val userId = call.parameters["userId"]
+
+            call.respondMaybe(controller.getAllByUserId(userId))
+        }
+
+        get("/{userId}/{id}") {
+            val id     = call.parameters["id"]
+            val userId = call.parameters["userId"]
+
+            call.respondMaybe(controller.getById(id, userId))
+        }
+
+        put("/{userId}/{id}") {
+            val id         = call.parameters["id"]
+            val userId     = call.parameters["userId"]
+            val updateToDo = call.receive<UpdateToDo>()
+
+            call.respondMaybe(controller.update(id, userId, updateToDo))
+        }
+
+        delete("/{userId}/{id}") {
+            val id     = call.parameters["id"]
+            val userId = call.parameters["userId"]
+
+            call.respondMaybe(controller.delete(id, userId))
+        }
+    }
+}
+
+class ToDoController(val service: ToDoService) {
     fun create(userIdStr: String?, createToDo: CreateToDo): Maybe<ToDo> =
         userIdStr.asId().flatMap { userId ->
             service.create(userId, createToDo)

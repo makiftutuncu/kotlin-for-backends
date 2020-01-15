@@ -15,5 +15,3 @@ class Left<L, R>(override val left: L) : Either<L, R>(left, null)
 class Right<L, R>(override val right: R) : Either<L, R>(null, right)
 
 typealias Maybe<T> = Either<ToDoError,  T>
-
-fun <T> T.asMaybe(): Maybe<T> = Right(this)

@@ -6,38 +6,22 @@ import dev.akif.todowithktor.common.asMaybe
 import io.ktor.http.HttpStatusCode
 
 class ToDoService(private val repository: ToDoRepository) {
-    fun create(userId: Long, createToDo: CreateToDo): Maybe<ToDo> {
-        val id   = repository.generateId()
-        val toDo = ToDo.from(id, userId, createToDo)
-
-        return repository.create(id, toDo)
-    }
-
-    fun getById(id: Long, userId: Long): Maybe<ToDo> {
-        val maybeToDo = repository.getById(id)
-
-        return maybeToDo.flatMap { toDo ->
-            if (toDo == null || toDo.userId != userId) {
-                ToDoError("Cannot get todo $id, it does not exist!", HttpStatusCode.NotFound).asMaybe()
-            } else {
-                toDo.asMaybe()
-            }
-        }
-    }
+    fun create(userId: Long, createToDo: CreateToDo): Maybe<ToDo> = repository.create(userId, createToDo)
 
     fun getAllByUserId(userId: Long): Maybe<List<ToDo>> = repository.getAllByUserId(userId)
 
-    fun update(id: Long, userId: Long, updateToDo: UpdateToDo): Maybe<ToDo> {
-        return getById(id, userId).flatMap { toDo ->
-            val newToDo = toDo.updatedWith(updateToDo)
-
-            repository.update(toDo.id, newToDo)
+    fun getById(id: Long, userId: Long): Maybe<ToDo> =
+        repository.getById(id, userId).flatMap { toDo ->
+            toDo?.asMaybe() ?: ToDoError("Todo $id is not found!", HttpStatusCode.NotFound).asMaybe()
         }
-    }
 
-    fun delete(id: Long, userId: Long): Maybe<Unit> {
-        return getById(id, userId).flatMap { toDo ->
+    fun update(id: Long, userId: Long, updateToDo: UpdateToDo): Maybe<ToDo> =
+        getById(id, userId).flatMap { toDo ->
+            repository.update(toDo, updateToDo)
+        }
+
+    fun delete(id: Long, userId: Long): Maybe<Unit> =
+        getById(id, userId).flatMap { toDo ->
             repository.delete(toDo.id)
         }
-    }
 }
