@@ -7,8 +7,8 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 
-object ZDT {
-    fun now(): ZonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).withNano(0)
+object ZDT : ZDTProvider {
+    override fun now(): ZonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).withNano(0)
 
     val formatter = DateTimeFormatterBuilder()
         .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
@@ -17,7 +17,6 @@ object ZDT {
         .toFormatter()
 
     val gsonAdapter: Any = object : JsonSerializer<ZonedDateTime>, JsonDeserializer<ZonedDateTime> {
-
         override fun serialize(zdt: ZonedDateTime?,
                                typeOfSrc: Type?,
                                context: JsonSerializationContext?): JsonElement = JsonPrimitive(zdt?.asString())

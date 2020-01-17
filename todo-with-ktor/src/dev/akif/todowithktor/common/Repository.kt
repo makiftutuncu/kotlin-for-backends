@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.Exception
 
-abstract class Repository<M>(protected val db: DB) {
+abstract class Repository<M>(open val db: DB) {
     abstract fun convertTo(row: ResultRow): M
 
     fun <T> run(block: () -> T): Maybe<T> =

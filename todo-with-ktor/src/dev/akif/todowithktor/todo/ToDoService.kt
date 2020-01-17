@@ -5,7 +5,7 @@ import dev.akif.todowithktor.common.ToDoError
 import dev.akif.todowithktor.common.asMaybe
 import io.ktor.http.HttpStatusCode
 
-class ToDoService(private val repository: ToDoRepository) {
+class ToDoService(val repository: ToDoRepository) {
     fun create(userId: Long, createToDo: CreateToDo): Maybe<ToDo> = repository.create(userId, createToDo)
 
     fun getAllByUserId(userId: Long): Maybe<List<ToDo>> = repository.getAllByUserId(userId)

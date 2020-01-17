@@ -1,10 +1,13 @@
-val kotlin_version: String by project
-val ktor_version: String by project
-val exposed_version: String by project
-val h2_version: String by project
-val hikaricp_version: String by project
-val flyway_version: String by project
-val logback_version: String by project
+import org.gradle.api.tasks.testing.logging.TestLogEvent.*
+
+val kotlinVersion   = "1.3.61"
+val ktorVersion     = "1.2.6"
+val exposedVersion  = "0.20.3"
+val h2Version       = "1.4.200"
+val hikaricpVersion = "3.4.2"
+val flywayVersion   = "6.1.4"
+val logbackVersion  = "1.2.1"
+val jUnitVersion    = "5.5.2"
 
 plugins {
     application
@@ -25,21 +28,35 @@ repositories {
 
 dependencies {
     // Kotlin
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     // Ktor
-    implementation("io.ktor:ktor-server-netty:$ktor_version")
-    implementation("io.ktor:ktor-gson:$ktor_version")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-gson:$ktorVersion")
     // Database
-    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
-    implementation("com.h2database:h2:$h2_version")
-    implementation("com.zaxxer:HikariCP:$hikaricp_version")
-    implementation("org.flywaydb:flyway-core:$flyway_version")
+    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
+    implementation("com.h2database:h2:$h2Version")
+    implementation("com.zaxxer:HikariCP:$hikaricpVersion")
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
     // Logging
-    implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
     // Tests
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+    testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter:$jUnitVersion")
+}
+
+tasks {
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events          = setOf(PASSED, SKIPPED, FAILED)
+            showCauses      = true
+            showExceptions  = true
+            showStackTraces = true
+        }
+    }
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")

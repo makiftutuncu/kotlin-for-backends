@@ -1,8 +1,6 @@
 package dev.akif.todowithktor
 
-import dev.akif.todowithktor.common.ToDoError
-import dev.akif.todowithktor.common.ZDT
-import dev.akif.todowithktor.common.registerErrorHandler
+import dev.akif.todowithktor.common.*
 import dev.akif.todowithktor.database.DB
 import dev.akif.todowithktor.todo.ToDoRepository
 import dev.akif.todowithktor.todo.ToDoService
@@ -21,8 +19,9 @@ import java.time.ZonedDateTime
 
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
-    val db             = DB(if (testing) "mem:todo" else "file:./db/todo.db")
-    val toDoRepository = ToDoRepository(db)
+    val db             = if (testing) DB("mem:todo") else DB("file:./db/todo.db")
+    val zdt            = if (testing) FixedZDT(ZDT.now()) else ZDT
+    val toDoRepository = ToDoRepository(db, zdt)
     val toDoService    = ToDoService(toDoRepository)
 
     db.init()

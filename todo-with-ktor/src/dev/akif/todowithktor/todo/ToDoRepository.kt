@@ -6,14 +6,14 @@ import io.ktor.http.HttpStatusCode
 import org.jetbrains.exposed.sql.*
 import java.time.ZoneOffset
 
-class ToDoRepository(db: DB) : Repository<ToDo>(db) {
+class ToDoRepository(override val db: DB, val zdt: ZDTProvider) : Repository<ToDo>(db) {
     fun create(userId: Long, createToDo: CreateToDo): Maybe<ToDo> =
         run {
             ToDoTable.insertAndGetId {
                 it[ToDoTable.userId]  = userId
                 it[title]             = createToDo.title
                 it[details]           = createToDo.details
-                it[time]              = ZDT.now().toInstant()
+                it[time]              = zdt.now().toInstant()
             }
         }.map { id ->
             ToDo.from(id.value, userId, createToDo)
@@ -41,7 +41,7 @@ class ToDoRepository(db: DB) : Repository<ToDo>(db) {
         }
 
     fun update(toDo: ToDo, updateToDo: UpdateToDo): Maybe<ToDo> {
-        val now = ZDT.now()
+        val now = zdt.now()
 
         return run {
             ToDoTable.update({ (ToDoTable.id eq toDo.id) }) {
