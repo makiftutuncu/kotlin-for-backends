@@ -52,4 +52,22 @@ object EitherTest {
 
         assertEquals(expected, actual)
     }
+
+    @Test fun `a new value is produced when Left is folded`() {
+        val maybe = Left<Int, Long>(42)
+
+        val expected = true
+        val actual   = maybe.fold({ it > 0 }, { it > 0 })
+
+        assertEquals(expected, actual)
+    }
+
+    @Test fun `a new value is produced when Right is folded`() {
+        val maybe = Right<Int, Long>(42L)
+
+        val expected = true
+        val actual   = maybe.fold({ it > 0 }, { it > 0 })
+
+        assertEquals(expected, actual)
+    }
 }

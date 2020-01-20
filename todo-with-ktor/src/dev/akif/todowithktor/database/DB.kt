@@ -11,7 +11,7 @@ class DB(val url: String) {
         HikariDataSource(
             HikariConfig().apply {
                 driverClassName = "org.h2.Driver"
-                jdbcUrl         = "jdbc:h2:$url;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE"
+                jdbcUrl         = "jdbc:h2:$url"
                 validate()
             }
         )

@@ -7,17 +7,20 @@ import org.jetbrains.exposed.sql.*
 import java.time.ZoneOffset
 
 class ToDoRepository(override val db: DB, val zdt: ZDTProvider) : Repository<ToDo>(db) {
-    fun create(userId: Long, createToDo: CreateToDo): Maybe<ToDo> =
-        run {
+    fun create(userId: Long, createToDo: CreateToDo): Maybe<ToDo> {
+        val now = zdt.now()
+
+        return run {
             ToDoTable.insertAndGetId {
                 it[ToDoTable.userId]  = userId
                 it[title]             = createToDo.title
                 it[details]           = createToDo.details
-                it[time]              = zdt.now().toInstant()
+                it[time]              = now.toInstant()
             }
         }.map { id ->
-            ToDo.from(id.value, userId, createToDo)
+            ToDo.from(id.value, userId, createToDo, now)
         }
+    }
 
     fun getAllByUserId(userId: Long): Maybe<List<ToDo>> =
         run {

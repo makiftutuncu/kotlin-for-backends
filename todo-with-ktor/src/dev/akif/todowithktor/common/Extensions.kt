@@ -5,6 +5,7 @@ import io.ktor.application.call
 import io.ktor.features.StatusPages
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
+import org.slf4j.Logger
 import java.time.ZonedDateTime
 
 fun <T> T.asMaybe(): Maybe<T> = Right(this)
@@ -23,9 +24,11 @@ suspend fun <T> ApplicationCall.respondMaybe(maybe: Maybe<T>, status: HttpStatus
     }
 }
 
-fun StatusPages.Configuration.registerErrorHandler() {
+fun StatusPages.Configuration.registerErrorHandler(logger: Logger) {
     exception<Exception> { cause ->
-        call.respondMaybe(ToDoError(cause.message ?: cause.localizedMessage).asMaybe<Unit>())
+        val error = ToDoError(cause.message ?: cause.localizedMessage)
+        logger.error("Request failed! $error", cause)
+        call.respondMaybe(error.asMaybe<Unit>())
     }
 }
 

@@ -9,6 +9,12 @@ sealed class Either<L, R>(open val left: L?, open val right: R?) {
             is Right -> f(right)
         }
 
+    fun <T> fold(fromLeft: (L) -> T, fromRight: (R) -> T): T =
+        when (this) {
+            is Left  -> fromLeft(left)
+            is Right -> fromRight(right)
+        }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
 
