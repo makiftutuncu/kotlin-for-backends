@@ -44,4 +44,4 @@ class Right<L, R>(override val right: R) : Either<L, R>(null, right) {
     override fun toString(): String = "Right($right)"
 }
 
-typealias Maybe<T> = Either<ToDoError,  T>
+typealias Maybe<T> = Either<TodoError,  T>

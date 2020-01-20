@@ -1,4 +1,4 @@
-# ToDo with Ktor
+# Todo with Ktor
 
 This is a demo project written in Kotlin with [Ktor](https://ktor.io). It is a to-do list backend with very basic functionality. It uses
 
@@ -11,7 +11,7 @@ This is a demo project written in Kotlin with [Ktor](https://ktor.io). It is a t
 
 ### 1. General Information
 
-ToDo API is RESTful. It consumes and produces Json data. There is no authorization or authentication. Providing a valid `userId` as a path parameter is enough, because why not? 🤷🏻
+Todo API is RESTful. It consumes and produces Json data. There is no authorization or authentication. Providing a valid `userId` as a path parameter is enough, because why not? 🤷🏻
 
 All successful responses will have `200 OK` status unless explicitly mentioned.
 
@@ -26,7 +26,7 @@ All handled errors return an error Json in following format with an HTTP status 
 }
 ```
 
-### 2. Creating a ToDo Item
+### 2. Creating a Todo Item
 
 Creates a new to-do item with given data
 
@@ -59,7 +59,7 @@ A successful response will have `201 Created` status.
 }
 ```
 
-### 3. Listing ToDo Items
+### 3. Listing Todo Items
 
 Lists all to-do items for given user id
 
@@ -87,7 +87,7 @@ Response payload will contain a Json array of all to-do items.
 ]
 ```
 
-### 4. Getting a ToDo Item
+### 4. Getting a Todo Item
 
 Gets a to-do item with given id
 
@@ -113,7 +113,7 @@ Response payload will contain a Json object of the to-do item.
 }
 ```
 
-### 5. Updating a ToDo Item
+### 5. Updating a Todo Item
 
 Updates a to-do item with given data
 
@@ -146,7 +146,7 @@ Response payload will contain a Json object of the to-do item.
 }
 ```
 
-### 6. Deleting a ToDo Item
+### 6. Deleting a Todo Item
 
 Deletes given to-do item
 

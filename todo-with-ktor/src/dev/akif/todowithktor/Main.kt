@@ -3,8 +3,8 @@ package dev.akif.todowithktor
 import com.google.gson.GsonBuilder
 import dev.akif.todowithktor.common.*
 import dev.akif.todowithktor.database.DB
-import dev.akif.todowithktor.todo.ToDoRepository
-import dev.akif.todowithktor.todo.ToDoService
+import dev.akif.todowithktor.todo.TodoRepository
+import dev.akif.todowithktor.todo.TodoService
 import dev.akif.todowithktor.todo.todo
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -23,14 +23,14 @@ val gson =
     GsonBuilder()
         .setPrettyPrinting()
         .serializeNulls()
-        .registerTypeAdapter(ToDoError::class.java, ToDoError.gsonAdapter)
+        .registerTypeAdapter(TodoError::class.java, TodoError.gsonAdapter)
         .registerTypeAdapter(ZonedDateTime::class.java, ZDT.gsonAdapter)
         .create()
 
 fun Application.modules(db: DB,
                         zdt: ZDTProvider,
-                        toDoRepository: ToDoRepository,
-                        toDoService: ToDoService) {
+                        todoRepository: TodoRepository,
+                        todoService: TodoService) {
     val logger = LoggerFactory.getLogger("todo")
 
     db.init()
@@ -48,17 +48,17 @@ fun Application.modules(db: DB,
             call.respondText("pong", ContentType.Text.Html)
         }
 
-        todo(toDoService)
+        todo(todoService)
     }
 }
 
 fun Application.defaultModules() {
     val db             = DB("file:./db/todo.db;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE")
     val zdt            = ZDT
-    val toDoRepository = ToDoRepository(db, zdt)
-    val toDoService    = ToDoService(toDoRepository)
+    val todoRepository = TodoRepository(db, zdt)
+    val todoService    = TodoService(todoRepository)
 
-    modules(db, zdt, toDoRepository, toDoService)
+    modules(db, zdt, todoRepository, todoService)
 }
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)

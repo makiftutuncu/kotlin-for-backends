@@ -13,6 +13,6 @@ abstract class Repository<M>(open val db: DB) {
         try {
             transaction { block().asMaybe() }
         } catch (e: Exception) {
-            ToDoError("Database operation failed! Reason: $e", HttpStatusCode.InternalServerError).asMaybe()
+            TodoError("Database operation failed! Reason: $e", HttpStatusCode.InternalServerError).asMaybe()
         }
 }

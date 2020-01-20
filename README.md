@@ -3,7 +3,7 @@
 Code from my [Kotlin for Backends](https://docs.google.com/presentation/d/1NPQ-0Vv3Of775OUGLR3S0BtfVYLoMFRXmvNlGoDByyE) Talk, it contains 2 parts:
 
 1. [Introduction](intro/README.md) where Kotlin and its features are introduced
-2. [TODO](todo-with-ktor/README.md) application written in Kotlin with [Ktor](https://ktor.io/) as a demo project
+2. [Todo](todo-with-ktor/README.md) application written in Kotlin with [Ktor](https://ktor.io/) as a demo project
 
 ## Contributing
 

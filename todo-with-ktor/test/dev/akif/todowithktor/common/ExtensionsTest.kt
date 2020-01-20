@@ -19,7 +19,7 @@ object ExtensionsTest {
     }
 
     @Test fun `converting a String to an id can fail when it is not a valid Long`() {
-        val expected = ToDoError("Invalid id foo!", HttpStatusCode.BadRequest).asMaybe<Long>()
+        val expected = TodoError("Invalid id foo!", HttpStatusCode.BadRequest).asMaybe<Long>()
 
         val actual = "foo".asId()
 

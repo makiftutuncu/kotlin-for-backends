@@ -14,7 +14,7 @@ fun String?.asId(): Maybe<Long> =
     try {
         (this ?: "").toLong().asMaybe()
     } catch (e: Exception) {
-        ToDoError("Invalid id $this!", HttpStatusCode.BadRequest).asMaybe()
+        TodoError("Invalid id $this!", HttpStatusCode.BadRequest).asMaybe()
     }
 
 suspend fun <T> ApplicationCall.respondMaybe(maybe: Maybe<T>, status: HttpStatusCode = HttpStatusCode.OK) {
@@ -26,7 +26,7 @@ suspend fun <T> ApplicationCall.respondMaybe(maybe: Maybe<T>, status: HttpStatus
 
 fun StatusPages.Configuration.registerErrorHandler(logger: Logger) {
     exception<Exception> { cause ->
-        val error = ToDoError(cause.message ?: cause.localizedMessage)
+        val error = TodoError(cause.message ?: cause.localizedMessage)
         logger.error("Request failed! $error", cause)
         call.respondMaybe(error.asMaybe<Unit>())
     }
